@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/data/api/repositories/weather_repository.dart';
-import 'package:weather_app/domain/entities/condition.dart';
 import 'package:weather_app/domain/entities/forecast_day.dart';
-import 'package:weather_app/domain/entities/weather.dart';
 import 'package:weather_app/presentation/components/theme/app_bar.dart';
 import 'package:weather_app/presentation/components/widgets/wind_humidity_text.dart';
 
@@ -30,10 +28,10 @@ class WeatherChange extends StatefulWidget {
 
 class _WeatherChangeState extends State<WeatherChange> {
   final ScrollController _scrollController = ScrollController();
-  List<Condition> conditionList = [];
+  List<Forecastday> conditionList = [];
   bool hasMore = true;
   bool isLoading = false;
-  int page = 2;
+  int page = 3;
 
   final WeatherRepository _weatherRepository = WeatherRepository();
 
@@ -60,7 +58,7 @@ class _WeatherChangeState extends State<WeatherChange> {
     setState(() {
       isLoading = false;
       hasMore = true;
-      page = 2;
+      page = 1;
       conditionList.clear();
     });
 
@@ -150,7 +148,6 @@ class _WeatherChangeState extends State<WeatherChange> {
                     child: SizedBox(
                       height: 200.0,
                       child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
                         controller: _scrollController,
                         itemCount: conditionList.length + 1,
                         itemBuilder: (context, int index) {
@@ -159,10 +156,24 @@ class _WeatherChangeState extends State<WeatherChange> {
                               onTap: () {},
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
-                                child: Card(
-                                  elevation: 3,
-                                  child: Center(
-                                      child: Text(conditionList[index].text)),
+                                child: SizedBox(
+                                  height: 150,
+                                  width: 150,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    elevation: 3,
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                              "Dia: ${conditionList[index].date}"),
+                                          Text(
+                                              "Média: ${conditionList[index].day.avgtempC}"),
+                                          Text(
+                                              "Máxima: ${conditionList[index].day.maxtempC}"),
+                                        ]),
+                                  ),
                                 ),
                               ),
                             );
@@ -198,15 +209,17 @@ class _WeatherChangeState extends State<WeatherChange> {
     isLoading = true;
     List<Forecastday> newForecastday = await _weatherRepository
         .getWeatherFutureData(widget.widget.weather.location.name, page);
+
+    print("Valor: ${newForecastday}");
     setState(() {
       page++;
       isLoading = false;
-      if (newForecastday.length < 10) {
+      if (newForecastday.length < 3) {
         hasMore = false;
       }
 
       for (int index = 0; index < newForecastday.length; index++) {
-        conditionList.add(newForecastday[index].day.condition);
+        conditionList.add(newForecastday[index]);
       }
     });
   }

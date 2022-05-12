@@ -35,8 +35,8 @@ class WeatherRepository implements IWeatherRepository {
   @override
   Future<List<Forecastday>> getWeatherFutureData(
       String location, int page) async {
-    final http.Response response = await client.get(
-        Uri.parse('$baseUrlWithApi&q=$location&days=$page&aqi=no&alerts=no'));
+    final http.Response response = await client
+        .get(Uri.parse('$baseUrlWithApi&q=$location&$page&aqi=no&alerts=no'));
 
     if (response.statusCode != 200) {
       throw Exception('Falha ao carregar clima');
