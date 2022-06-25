@@ -210,17 +210,20 @@ class _WeatherChangeState extends State<WeatherChange> {
     List<Forecastday> newForecastday = await _weatherRepository
         .getWeatherFutureData(widget.widget.weather.location.name, page);
 
-    print("Valor: ${newForecastday}");
     setState(() {
-      page++;
-      isLoading = false;
-      if (newForecastday.length < 3) {
-        hasMore = false;
-      }
-
-      for (int index = 0; index < newForecastday.length; index++) {
-        conditionList.add(newForecastday[index]);
-      }
+      changeAddCondition(newForecastday);
     });
+  }
+
+  void changeAddCondition(List<Forecastday> forecastday) {
+    page++;
+    isLoading = false;
+    if (forecastday.length < 3) {
+      hasMore = false;
+    }
+
+    for (int index = 0; index < forecastday.length; index++) {
+      conditionList.add(forecastday[index]);
+    }
   }
 }
